@@ -1,0 +1,6 @@
+2024-08-19 21:23:33.928636-07:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]TITLE"; expected "TRUNCATE"; SQL statement:
+TITLE [42001-224]
+2024-08-19 21:23:43.010226-07:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * [*]TITLE"; SQL statement:
+SELECT * TITLE [42000-224]
