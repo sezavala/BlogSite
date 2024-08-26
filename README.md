@@ -1,7 +1,7 @@
 <h1 align="center"> Open-Source Blog Site (CTI) </h1> <br>
 <p align="center">
   <a href="https://gitpoint.co/">
-    <img alt="GitPoint" title="GitPoint" src="https://ibb.co/582R70c" width="450">
+    <img alt="GitPoint" title="GitPoint" src="https://i.ibb.co/d275hTK/Designer.jpg" width="450">
   </a>
 </p>
 
