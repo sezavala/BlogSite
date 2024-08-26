@@ -1,7 +1,7 @@
 <h1 align="center"> Open-Source Blog Site (CTI) </h1> <br>
 <p align="center">
   <a href="https://gitpoint.co/">
-    <img alt="GitPoint" title="GitPoint" src="http://i.imgur.com/VShxJHs.png" width="450">
+    <img alt="GitPoint" title="GitPoint" src="https://ibb.co/582R70c" width="450">
   </a>
 </p>
 
@@ -28,13 +28,14 @@
 This blog site is made specifically for cohort mates in CTI who have completed their open-source experience and are ready to explore different open-source projects and keep track of their journey and show off their skills!
 
 ## Features
-<h1>Template:</h1>
 A few of the things you can do with our blog site:
 
 * View user activity feed
 * Make custom blog posts
 * Update and delete posts
 * Supports user authentication and authorization
+
+<h1>Template:</h1>
 
 <p align="center">
   <img src = "http://i.imgur.com/IkSnFRL.png" width=700>
