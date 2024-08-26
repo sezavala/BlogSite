@@ -29,17 +29,12 @@ This blog site is made specifically for cohort mates in CTI who have completed t
 
 ## Features
 <h1>Template:</h1>
-A few of the things you can do with GitPoint:
+A few of the things you can do with our blog site:
 
 * View user activity feed
-* Communicate on your issue and pull request conversations
-* Close or lock issues
-* Apply labels and assignees
-* Review and merge pull requests
-* Create new issues
-* Star, watch and fork repositories
-* Control your unread and participating notifications
-* Easily search for any user or repository
+* Make custom blog posts
+* Update and delete posts
+* Supports user authentication and authorization
 
 <p align="center">
   <img src = "http://i.imgur.com/IkSnFRL.png" width=700>
