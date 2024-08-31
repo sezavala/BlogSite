@@ -27,12 +27,12 @@ public class SeedData implements CommandLineRunner {
             Account account1 = new Account();
             Account account2 = new Account();
 
-            account1.setFirstName("Sergio");
+            account1.setFirstName("User");
             account1.setLastName("user");
             account1.setEmail("user.user@domain.com");
             account1.setPassword("password");
 
-            account2.setFirstName("Johanna");
+            account2.setFirstName("Admin");
             account2.setLastName("admin");
             account2.setEmail("admin.admin@domain.com");
             account2.setPassword("password");
@@ -41,13 +41,13 @@ public class SeedData implements CommandLineRunner {
             accountService.save(account2);
 
             Post post1 = new Post();
-            post1.setTitle("Blog On My Girlfriend");
-            post1.setBody("Post Body");
+            post1.setTitle("First open-source contribution");
+            post1.setBody("For the last few months, I have dedicated...");
             post1.setAccount(account1);
 
             Post post2 = new Post();
-            post2.setTitle("Blog On My Boyfriend");
-            post2.setBody("Post2 Body");
+            post2.setTitle("Intro to Open-Blog");
+            post2.setBody("Welcome to Open-Blog, a blog site for open-source contributors...");
             post2.setAccount(account2);
 
             postService.save(post1);

@@ -9,6 +9,9 @@
     <div class="container">
       <h1>Sergio's Blogs</h1>
       <hr />
+      <ul>
+        <li><a th:href="@{/post/new}">New Post</a></li>
+      </ul>
       <div class="posts-container">
         <div class="post" th:each="post : ${posts}">
           <h2>
