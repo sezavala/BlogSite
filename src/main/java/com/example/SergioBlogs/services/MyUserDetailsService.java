@@ -4,6 +4,7 @@ import com.example.SergioBlogs.models.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,6 +36,6 @@ public class MyUserDetailsService implements UserDetailsService {
                 .collect(Collectors.toList());
 
 
-        return new org.springframework.security.core.userdetails.User(account.getEmail(), account.getPassword(), account.grantedAuthorities());
+        return new User(account.getFirstName() + " " + account.getLastName(), account.getPassword(), grantedAuthorityList);
     }
 }

@@ -6,6 +6,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -16,8 +20,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig {
 
+    @Bean
+    public static PasswordEncoder passwordEncoderBean(){
+        return new BCryptPasswordEncoder();
+    }
+
     private static final String[] WHITELIST = {
-        "/", "/signup", "/h2-console/*"
+        "/", "/signup", "/h2-console/**"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,6 +52,11 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                 )
                 .httpBasic(withDefaults());
+
+        // Delete when moving from h2
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+
 
         return http.build();
     }

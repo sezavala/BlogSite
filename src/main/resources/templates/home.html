@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,9 +28,19 @@
       </div>
     </div>
     <hr />
-    <ul>
+    <ul sec:authorize="!isAuthenticated()">
       <li><a th:href="@{/signup}">Sign Up</a></li>
       <li><a th:href="@{/login}">Login</a></li>
     </ul>
+  <div sec:authorize="isAuthenticated()">
+    <form action="#"
+          th:action="@{/logout}"
+          method="POST">
+      <div>
+        <label>Welcome, <span sec:authentication="name">Username</span></label>
+        <button type="submit">Logout</button>
+      </div>
+    </form>
+  </div>
   </body>
 </html>

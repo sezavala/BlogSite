@@ -32,7 +32,14 @@ public class PostService {
             String formattedDate = now.format(formatter);
             post.setCreatedAt(formattedDate);
         }
-
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+        String formattedDate = now.format(formatter);
+        post.setModifiedAt(formattedDate);
         return postRepository.save(post);
+    }
+
+    public void delete(Post post){
+        postRepository.delete(post);
     }
 }
