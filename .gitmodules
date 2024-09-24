@@ -1,3 +1,0 @@
-[submodule "src/main/resources/static/open-blog-front"]
-	path = src/main/resources/static/open-blog-front
-	url = git@github.com:sezavala/Open-Blog.git
