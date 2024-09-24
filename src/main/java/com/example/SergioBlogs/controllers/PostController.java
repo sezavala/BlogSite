@@ -5,18 +5,18 @@ import com.example.SergioBlogs.models.Post;
 import com.example.SergioBlogs.services.AccountService;
 import com.example.SergioBlogs.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
+@RequestMapping("/api/posts")
 public class PostController {
 
     @Autowired
@@ -25,76 +25,93 @@ public class PostController {
     @Autowired
     private AccountService accountService;
 
-    @GetMapping("/posts/{id}")
-    public String getPost(@PathVariable Long id, Model model){
-        Optional<Post> optionalPost = postService.getById(id);
-        if (optionalPost.isPresent()){
-            Post post = optionalPost.get();
-            model.addAttribute("post", post);
-            return "post";
-        } else{
-            return "404";
-        }
+    @GetMapping
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> posts = postService.getAll();
+        return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/post/new")
-    public String newPost(Model model){
-        Optional<Account> optionalAccount = accountService.findByEmail("user.user@domain.com");
-        if (optionalAccount.isPresent()){
-            Post post = new Post();
-            post.setAccount(optionalAccount.get());
-            model.addAttribute("post", post);
-            return "new_post";
-        } else{
-            return "redirect:/login";
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<Post> getSinglePost(@PathVariable Long id) {
+        return postService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/posts/{id}/edit")
-    @PreAuthorize("isAuthenticated()")
-    public String getPostForEdit(@PathVariable Long id, Model model){
-        Optional<Post> optionalPost = postService.getById(id);
+    @PostMapping
+    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String email = authentication.getName();
+            Optional<Account> account = accountService.findByEmail(email);
+            account.ifPresent(post::setAccount);
 
-        if(optionalPost.isPresent()){
-            Post post = optionalPost.get();
-            model.addAttribute("post", post);
-            return "post_edit";
+            post.setCreatedAt(LocalDateTime.now());
+            post.setModifiedAt(LocalDateTime.now());
+            Post created = postService.save(post);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } else {
-            return "404";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
-    @PostMapping("/posts/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public String updatePost(@PathVariable Long id, Model model, Post post, BindingResult result){
-        Optional<Post> optionalPost = postService.getById(id);
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post updatedPost) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Optional<Post> optionalPost = postService.getById(id);
+            if (optionalPost.isPresent()) {
+                Post existingPost = optionalPost.get();
 
-        if(optionalPost.isPresent()){
-            Post existingPost = optionalPost.get();
-            existingPost.setTitle(post.getTitle());
-            existingPost.setBody(post.getBody());
-
-            postService.save(existingPost);
+                // Ensure the authenticated user is the owner of the post
+                String email = authentication.getName();
+                Optional<Account> account = accountService.findByEmail(email);
+                if (account.isPresent() && existingPost.getAccount().getId().equals(account.get().getId())) {
+                    existingPost.setTitle(updatedPost.getTitle());
+                    existingPost.setBody(updatedPost.getBody());
+                    existingPost.setModifiedAt(LocalDateTime.now());
+                    Post savedPost = postService.save(existingPost);
+                    return ResponseEntity.ok(savedPost);
+                } else {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+                }
+            } else {
+                return ResponseEntity.notFound().build(); // 404 Not Found
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return "redirect:/posts/" + post.getId();
     }
 
-    @GetMapping("/posts/{id}/delete")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String deletePost(@PathVariable Long id){
-        Optional<Post> optionalPost = postService.getById(id);
-
-        if(optionalPost.isPresent()){
-            Post existingPost = optionalPost.get();
-            postService.delete(existingPost);
-            return "redirect:/";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Optional<Post> post = postService.getById(id);
+            if (post.isPresent()) {
+                // Ensure the authenticated user is the owner of the post
+                String email = authentication.getName();
+                Optional<Account> account = accountService.findByEmail(email);
+                if (account.isPresent() && post.get().getAccount().getId().equals(account.get().getId())) {
+                    postService.delete(id);
+                    return ResponseEntity.noContent().build(); // 204 No Content
+                } else {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+                }
+            } else {
+                return ResponseEntity.notFound().build(); // 404 Not Found
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
         }
-        return "404";
     }
 
-    @PostMapping("/post/new")
-    public String saveNewPost(@ModelAttribute Post post){
-        postService.save(post);
-        return "redirect:/posts/" + post.getId();
+    @GetMapping("/author/{accountId}")
+    public ResponseEntity<List<Post>> getPostsByAuthor(@PathVariable Long accountId) {
+        List<Post> posts = postService.getPostsByAccount(accountId);
+        if (posts.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content
+        }
+        return ResponseEntity.ok(posts); // 200 OK
     }
 }

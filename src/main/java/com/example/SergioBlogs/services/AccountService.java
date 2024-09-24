@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +22,19 @@ public class AccountService {
     }
 
     public Optional<Account> findByEmail(String email){
-        return accountRepository.findOneByEmail(email);
+        return accountRepository.findByEmail(email);
+    }
+
+    public void delete(Long accountId){
+        Optional<Account> account = accountRepository.findById(accountId);
+        if(account.isPresent()){
+            accountRepository.delete(account.get());
+        } else{
+            throw new RuntimeException("Account not found with id: " + accountId);
+        }
+    }
+
+    public List<Account> getAll(){
+        return accountRepository.findAll();
     }
 }

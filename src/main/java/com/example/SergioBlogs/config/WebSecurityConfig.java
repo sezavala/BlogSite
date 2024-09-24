@@ -11,10 +11,14 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-// Removed unused import
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -26,11 +30,13 @@ public class WebSecurityConfig {
     }
 
     private static final String[] WHITELIST = {
-        "/", "/signup", "/h2-console/**"
+            "/", "/signup", "/h2-console/**", "/index.html", "/static/**", "/api/**", "/signup", "/login"
     };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults()) // Enable CORS
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers(WHITELIST).permitAll()
@@ -56,7 +62,6 @@ public class WebSecurityConfig {
         // Delete when moving from h2
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-
 
         return http.build();
     }

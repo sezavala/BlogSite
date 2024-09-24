@@ -1,27 +1,35 @@
 package com.example.SergioBlogs.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
+@Table(name = "posts")
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
 
+    @NotBlank
+    @Column(name = "title")
     private String title;
 
-    @Column(columnDefinition = "text")
+    @NotBlank
+    @Column(name = "body", columnDefinition = "text")
     private String body;
 
-    private String createdAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    private String modifiedAt;
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
 
     @NotNull
     @ManyToOne
